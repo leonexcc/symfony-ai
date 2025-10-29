@@ -163,13 +163,6 @@ final class OllamaResultConverterTest extends TestCase
         $this->assertSame([0.0, 0.0, 0.2], $convertedContent[1]->getData());
     }
 
-    private function generateConvertStreamingStream(): iterable
-    {
-        yield ['model' => 'deepseek-r1:latest', 'created_at'=> '2025-10-29T17:15:49.631700779Z', 'message' => ['role' => 'assistant', 'content' => 'Hello'], 'done' => false];
-        yield ['model' => 'deepseek-r1:latest', 'created_at'=> '2025-10-29T17:15:49.905924913Z', 'message' => ['role' => 'assistant', 'content' => ' world!'], 'done' => true,
-            'done_reason' => 'stop', 'total_duration' => 100, 'load_duration' => 10, 'prompt_eval_count' => 42, 'prompt_eval_duration' => 30, 'eval_count' => 17, 'eval_duration' => 60];
-    }
-
     public function testConvertStreamingResponse()
     {
         $converter = new OllamaResultConverter();
@@ -190,15 +183,6 @@ final class OllamaResultConverterTest extends TestCase
         $this->assertSame(' world!', $chunks->current()->getContent());
         $this->assertTrue($chunks->current()->isDone());
         $this->assertArrayHasKey('total_duration', $chunks->current()->raw);
-    }
-
-    private function generateConvertThinkingStreamingStream(): iterable
-    {
-        yield ['model' => 'deepseek-r1:latest', 'created_at'=> '2025-10-29T17:15:49.631700779Z', 'message' => ['role' => 'assistant', 'content' => '', 'thinking' => 'Thinking'], 'done' => false];
-        yield ['model' => 'deepseek-r1:latest', 'created_at'=> '2025-10-29T17:15:49.905924913Z', 'message' => ['role' => 'assistant', 'content' => '', 'thinking' => ' hard'], 'done' => false];
-        yield ['model' => 'deepseek-r1:latest', 'created_at'=> '2025-10-29T17:15:50.14497475Z', 'message' => ['role' => 'assistant', 'content' => 'Hello'], 'done' => false];
-        yield ['model' => 'deepseek-r1:latest', 'created_at'=> '2025-10-29T17:15:50.367912083Z', 'message' => ['role' => 'assistant', 'content' => ' world!'], 'done' => true,
-            'done_reason' => 'stop', 'total_duration' => 100, 'load_duration' => 10, 'prompt_eval_count' => 42, 'prompt_eval_duration' => 30, 'eval_count' => 17, 'eval_duration' => 60];
     }
 
     public function testConvertThinkingStreamingResponse()
@@ -223,13 +207,29 @@ final class OllamaResultConverterTest extends TestCase
         $this->assertFalse($chunks->current()->isDone());
         $chunks->next();
         $this->assertSame('Hello', $chunks->current()->getContent());
-        $this->assertSame(null, $chunks->current()->getThinking());
+        $this->assertNull($chunks->current()->getThinking());
         $this->assertFalse($chunks->current()->isDone());
         $chunks->next();
         $this->assertInstanceOf(OllamaMessageChunk::class, $chunks->current());
         $this->assertSame(' world!', $chunks->current()->getContent());
-        $this->assertSame(null, $chunks->current()->getThinking());
+        $this->assertNull($chunks->current()->getThinking());
         $this->assertTrue($chunks->current()->isDone());
         $this->assertArrayHasKey('total_duration', $chunks->current()->raw);
+    }
+
+    private function generateConvertStreamingStream(): iterable
+    {
+        yield ['model' => 'deepseek-r1:latest', 'created_at' => '2025-10-29T17:15:49.631700779Z', 'message' => ['role' => 'assistant', 'content' => 'Hello'], 'done' => false];
+        yield ['model' => 'deepseek-r1:latest', 'created_at' => '2025-10-29T17:15:49.905924913Z', 'message' => ['role' => 'assistant', 'content' => ' world!'], 'done' => true,
+            'done_reason' => 'stop', 'total_duration' => 100, 'load_duration' => 10, 'prompt_eval_count' => 42, 'prompt_eval_duration' => 30, 'eval_count' => 17, 'eval_duration' => 60];
+    }
+
+    private function generateConvertThinkingStreamingStream(): iterable
+    {
+        yield ['model' => 'deepseek-r1:latest', 'created_at' => '2025-10-29T17:15:49.631700779Z', 'message' => ['role' => 'assistant', 'content' => '', 'thinking' => 'Thinking'], 'done' => false];
+        yield ['model' => 'deepseek-r1:latest', 'created_at' => '2025-10-29T17:15:49.905924913Z', 'message' => ['role' => 'assistant', 'content' => '', 'thinking' => ' hard'], 'done' => false];
+        yield ['model' => 'deepseek-r1:latest', 'created_at' => '2025-10-29T17:15:50.14497475Z', 'message' => ['role' => 'assistant', 'content' => 'Hello'], 'done' => false];
+        yield ['model' => 'deepseek-r1:latest', 'created_at' => '2025-10-29T17:15:50.367912083Z', 'message' => ['role' => 'assistant', 'content' => ' world!'], 'done' => true,
+            'done_reason' => 'stop', 'total_duration' => 100, 'load_duration' => 10, 'prompt_eval_count' => 42, 'prompt_eval_duration' => 30, 'eval_count' => 17, 'eval_duration' => 60];
     }
 }

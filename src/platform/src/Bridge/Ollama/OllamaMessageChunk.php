@@ -14,18 +14,18 @@ namespace Symfony\AI\Platform\Bridge\Ollama;
 /**
  * @author Shaun Johnston <shaun@snj.au>
  */
-final readonly class OllamaMessageChunk
+final class OllamaMessageChunk
 {
     /**
      * @param array<string, mixed> $message
      * @param array<string, mixed> $raw
      */
     public function __construct(
-        public string $model,
-        public \DateTimeImmutable $created_at,
-        public array $message,
-        public bool $done,
-        public array $raw,
+        public readonly string $model,
+        public readonly \DateTimeImmutable $created_at,
+        public readonly array $message,
+        public readonly bool $done,
+        public readonly array $raw,
     ) {
     }
 
