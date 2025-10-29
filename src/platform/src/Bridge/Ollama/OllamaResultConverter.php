@@ -26,7 +26,7 @@ use Symfony\AI\Platform\Vector\Vector;
 /**
  * @author Christopher Hertel <mail@christopher-hertel.de>
  */
-final readonly class OllamaResultConverter implements ResultConverterInterface
+final class OllamaResultConverter implements ResultConverterInterface
 {
     public function supports(Model $model): bool
     {
@@ -106,6 +106,7 @@ final readonly class OllamaResultConverter implements ResultConverterInterface
                 new \DateTimeImmutable($data['created_at']),
                 $data['message'],
                 $data['done'],
+                $data,
             );
         }
     }
